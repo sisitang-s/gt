@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Growth">
+<meta name="theme-color" content="#3d6b54">
+<title>Growth Tracker</title>
+<style>
+:root{--bg:#fafaf8;--card:#fff;--border:#e8e5e0;--text:#2d2926;--muted:#8a857e;--accent:#5b8a72;--al:#e8f0ec;--ad:#3d6b54;--warm:#c4956a;--wl:#f5ede5;--safe-t:env(safe-area-inset-top);--safe-b:env(safe-area-inset-bottom)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;padding-bottom:var(--safe-b);overflow-x:hidden}
+button,input,label,select{font-family:inherit}
+.hdr{background:linear-gradient(135deg,#5b8a72,#3d6b54);padding:calc(12px + var(--safe-t)) 20px 14px;color:#fff}
+.hdr h1{font-size:20px;font-weight:700;letter-spacing:-0.02em}
+.hdr p{font-size:11px;opacity:0.7;margin-top:2px}
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:11px 12px;border:none;background:none;cursor:pointer;font-size:15px;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;transition:.2s}
+.tab.on{font-weight:700;color:var(--accent);border-bottom-color:var(--accent)}
+.bar{display:flex;padding:10px 14px 0;gap:6px;flex-wrap:wrap;align-items:center}
+.pill{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:13px;font-weight:600;cursor:pointer}
+.pill.on{border-color:var(--accent);background:var(--al);color:var(--ad)}
+.sm{padding:5px 10px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer}
+.sm.on{border-color:var(--accent);background:var(--al);color:var(--ad)}
+.sp{flex:1}
+.tb{padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer}
+.cnt{padding:14px;max-width:900px;margin:0 auto}
+.meta{font-size:11px;color:var(--muted);margin-bottom:10px}
+.cd{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--border);margin-bottom:16px}
+.cd-t{font-weight:700;font-size:15px;margin-bottom:14px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fl{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:3px;display:block;letter-spacing:.03em}
+.fi{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:15px;color:var(--text);background:var(--card);outline:none}
+.fi:focus{border-color:var(--accent)}
+.ba{width:100%;padding:10px 0;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer}
+.ba:active{background:var(--ad)}
+.ld{position:absolute;top:100%;left:0;right:0;z-index:10;background:var(--card);border:1px solid var(--border);border-radius:8px;max-height:110px;overflow:auto;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.li{padding:7px 10px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{padding:6px 3px;text-align:center;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.03em;white-space:nowrap;border-bottom:2px solid var(--border)}
+.tbl td{padding:7px 3px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap}
+.tl{text-align:left!important}
+.vl{font-weight:600}
+.db{background:none;border:none;cursor:pointer;color:#ccc;font-size:16px;padding:2px;line-height:1}
+.pct{display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:600}
+.pn{color:var(--accent);background:var(--al)}
+.pw{color:var(--warm);background:var(--wl)}
+.pa{color:#c0392b;background:#fdecea}
+.cs{margin-bottom:20px}
+.ct{font-size:13px;font-weight:700;margin-bottom:6px}
+.cl{display:flex;justify-content:center;gap:14px;font-size:10px;color:var(--muted);margin-top:4px}
+canvas{width:100%!important;height:240px!important;touch-action:pan-y}
+.lf{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.mo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:100}
+.md{background:var(--card);border-radius:16px;padding:22px;max-width:320px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.md h3{font-weight:700;font-size:15px;margin-bottom:6px}
+.md p{font-size:12px;color:var(--muted);margin-bottom:14px}
+.mb{display:flex;gap:8px}
+.mb button{flex:1;padding:10px;border-radius:8px;font-weight:600;cursor:pointer;font-size:14px}
+.mc{border:1px solid var(--border);background:var(--card);color:var(--text)}
+.mx{border:none;background:#c0392b;color:#fff}
+.hid{display:none!important}
+#imp{display:none}
+.empty{color:var(--muted);text-align:center;padding:30px;font-size:13px}
+.scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* PIN & Setup screens */
+.gate{position:fixed;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.gate-bg{background:linear-gradient(135deg,#5b8a72,#3d6b54)}
+.gate-box{text-align:center;width:100%;max-width:320px}
+.gate-icon{font-size:40px;margin-bottom:14px}
+.gate-title{color:#fff;font-size:18px;font-weight:700;margin-bottom:4px;letter-spacing:-0.02em}
+.gate-sub{color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:24px}
+.gate-input{width:100%;padding:14px 16px;border:2px solid rgba(255,255,255,0.2);border-radius:12px;font-size:17px;color:#fff;background:rgba(255,255,255,0.1);outline:none;text-align:center;letter-spacing:0.15em}
+.gate-input:focus{border-color:rgba(255,255,255,0.5)}
+.gate-input::placeholder{color:rgba(255,255,255,0.3)}
+.gate-err{color:#ffb3b3;font-size:13px;margin-top:8px;min-height:20px}
+.gate-btn{width:100%;padding:14px;background:#fff;color:#3d6b54;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px}
+.gate-btn:active{opacity:0.9}
+/* Setup specific */
+.setup-box{text-align:left;width:100%;max-width:340px;background:var(--card);border-radius:16px;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.setup-title{font-size:18px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.setup-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.setup-section{font-size:13px;font-weight:700;color:var(--accent);margin:16px 0 8px;padding-top:12px;border-top:1px solid var(--border)}
+.setup-section:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.setup-row{margin-bottom:10px}
+.setup-label{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:3px;display:block}
+.setup-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px;color:var(--text);background:var(--bg);outline:none}
+.setup-input:focus{border-color:var(--accent)}
+.setup-add{display:inline-flex;align-items:center;gap:4px;padding:8px 14px;border-radius:8px;border:1px dashed var(--border);background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px}
+.setup-add:active{background:var(--al)}
+.setup-remove{background:none;border:none;color:#ccc;font-size:18px;cursor:pointer;padding:2px 6px;line-height:1}
+.setup-remove:hover{color:#c0392b}
+.setup-btn{width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px}
+.setup-btn:active{background:var(--ad)}
+.setup-btn:disabled{opacity:0.4;cursor:default}
+.settings-btn{padding:7px 12px;border-radius:18px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- PIN GATE -->
+<div class="gate gate-bg" id="pinGate">
+<div class="gate-box">
+<div class="gate-icon">🌱</div>
+<div class="gate-title">Growth Tracker</div>
+<div class="gate-sub">Enter PIN to continue</div>
+<input type="password" class="gate-input" id="pinInput" placeholder="PIN" autocomplete="off">
+<div class="gate-err" id="pinErr"></div>
+<button class="gate-btn" onclick="checkPin()">Unlock</button>
+</div>
+</div>
+
+<!-- SETUP SCREEN -->
+<div class="gate" id="setupGate" style="background:var(--bg);display:none">
+<div class="setup-box">
+<div class="setup-title">Welcome! 👋</div>
+<div class="setup-sub">Set up your children to start tracking growth.</div>
+<div id="setupChildren"></div>
+<button class="setup-add" onclick="addSetupChild()">+ Add child</button>
+<button class="setup-btn" id="setupBtn" onclick="finishSetup()">Start Tracking</button>
+</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none">
+<div class="hdr"><h1>Growth Tracker</h1><p>WHO Child Growth Standards</p></div>
+<div class="tabs" id="tabs"></div>
+<div class="bar"><button class="pill on" data-v="log" onclick="V('log')">Log</button><button class="pill" data-v="charts" onclick="V('charts')">Charts</button><div class="sp"></div><button class="tb" onclick="xCSV()">↓ Export</button><label class="tb" style="display:flex;align-items:center;cursor:pointer">↑ Import<input type="file" id="imp" accept=".csv" onchange="iCSV(event)"></label><button class="settings-btn" onclick="showSettings()">⚙</button></div>
+<div class="cnt">
+<div class="meta" id="meta"></div>
+<div id="vLog">
+<div class="cd"><div class="cd-t">New Measurement</div><div class="fg">
+<div><label class="fl">Date</label><input type="date" class="fi" id="fD"></div>
+<div style="position:relative"><label class="fl">Location</label><input type="text" class="fi" id="fL" placeholder="e.g. Home, Clinic" autocomplete="off" oninput="sL()" onfocus="sL()"><div class="ld hid" id="ldd"></div></div>
+<div><label class="fl">Height (cm)</label><input type="number" step="0.1" class="fi" id="fH" placeholder="—" inputmode="decimal"></div>
+<div><label class="fl">Weight (kg)</label><input type="number" step="0.01" class="fi" id="fW" placeholder="—" inputmode="decimal"></div>
+<div><label class="fl">Head (cm) — optional</label><input type="number" step="0.1" class="fi" id="fHd" placeholder="—" inputmode="decimal"></div>
+<div style="display:flex;align-items:flex-end"><button class="ba" onclick="add()">Add Entry</button></div>
+</div></div>
+<div class="cd"><div class="scroll-wrap" id="tblC"></div></div>
+</div>
+<div id="vCh" class="hid">
+<div class="lf" id="locF"></div>
+<div class="cd">
+<div class="cs"><div class="ct">Height (cm)</div><canvas id="cH"></canvas><div class="cl"><span>— 50th</span><span>- - 15/85th</span><span>- - 3/97th</span></div></div>
+<div class="cs"><div class="ct">Weight (kg)</div><canvas id="cW"></canvas><div class="cl"><span>— 50th</span><span>- - 15/85th</span><span>- - 3/97th</span></div></div>
+<div class="cs"><div class="ct">Head Circumference (cm)</div><canvas id="cHd"></canvas><div class="cl"><span>— 50th</span><span>- - 15/85th</span><span>- - 3/97th</span></div></div>
+<div class="cs"><div class="ct">BMI (kg/m²)</div><canvas id="cB"></canvas><div class="cl"><span>— 50th</span><span>- - 15/85th</span><span>- - 3/97th</span></div></div>
+</div></div></div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="mo hid" id="delM" onclick="cDel()"><div class="md" onclick="event.stopPropagation()"><h3>Delete measurement?</h3><p id="delI"></p><div class="mb"><button class="mc" onclick="cDel()">Cancel</button><button class="mx" onclick="doDel()">Delete</button></div></div></div>
+
+<!-- SETTINGS MODAL -->
+<div class="mo hid" id="setM" onclick="hideSettings()"><div class="md" onclick="event.stopPropagation()" style="max-width:340px">
+<h3>Settings</h3>
+<div id="settingsChildren" style="margin:12px 0"></div>
+<button class="setup-add" onclick="addSettingsChild()" style="margin-bottom:12px">+ Add child</button>
+<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:8px">
+<button onclick="resetAll()" style="width:100%;padding:10px;border-radius:8px;border:1px solid #c0392b;background:none;color:#c0392b;font-weight:600;font-size:13px;cursor:pointer">Reset All Data</button>
+</div>
+<div class="mb" style="margin-top:12px"><button class="mc" onclick="hideSettings()" style="flex:1">Cancel</button><button class="ba" onclick="saveSettings()" style="flex:1;padding:10px;font-size:14px">Save</button></div>
+</div></div>
+
+<script>
+// WHO LMS DATA (boys only for now - can extend to girls)
+var WFA=[[0,.3487,3.3464,.14602],[1,.2297,4.4709,.13395],[2,.197,5.5675,.12385],[3,.1738,6.3762,.11727],[4,.1553,7.0023,.11316],[5,.1395,7.5105,.1108],[6,.1257,7.934,.10958],[7,.1134,8.297,.10902],[8,.1021,8.6151,.10882],[9,.0917,8.9014,.10881],[10,.082,9.1649,.10891],[11,.073,9.4122,.10906],[12,.0644,9.6479,.10925],[13,.0563,9.8749,.10949],[14,.0487,10.0953,.10976],[15,.0413,10.3108,.11007],[16,.0343,10.5228,.11041],[17,.0275,10.7319,.11079],[18,.0211,10.9385,.11119],[19,.0148,11.143,.11164],[20,.0087,11.3462,.11211],[21,.0029,11.5486,.11261],[22,-.0028,11.7504,.11314],[23,-.0083,11.9514,.11369],[24,-.0137,12.1515,.11426],[25,-.019,12.3502,.11485],[26,-.0241,12.5466,.11544],[27,-.029,12.7401,.11604],[28,-.0339,12.9303,.11664],[29,-.0385,13.1169,.11723],[30,-.0431,13.2999,.11781],[31,-.0476,13.4798,.11839],[32,-.0519,13.6567,.11896],[33,-.0562,13.8309,.11953],[34,-.0604,14.0027,.12008],[35,-.0645,14.1723,.12063],[36,-.0685,14.3397,.12117],[37,-.0725,14.5052,.1217],[38,-.0764,14.6691,.12222],[39,-.0802,14.8316,.12274],[40,-.084,14.993,.12325],[41,-.0877,15.1534,.12375],[42,-.0914,15.3131,.12425],[43,-.0951,15.4724,.12474],[44,-.0986,15.6315,.12523],[45,-.1022,15.7906,.12572],[46,-.1057,15.95,.1262],[47,-.1091,16.1099,.12668],[48,-.1126,16.2706,.12716],[49,-.116,16.4321,.12764],[50,-.1194,16.5949,.12811],[51,-.1227,16.759,.12858],[52,-.1261,16.9249,.12906],[53,-.1294,17.0926,.12953],[54,-.1327,17.2624,.13],[55,-.136,17.4345,.13047],[56,-.1393,17.6091,.13094],[57,-.1425,17.7864,.13141],[58,-.1458,17.9666,.13188],[59,-.149,18.1497,.13235],[60,-.1524,18.3358,.13282]];
+var LFA=[[0,1,49.8842,.03795],[1,1,54.7244,.03557],[2,1,58.4249,.03424],[3,1,61.4292,.03328],[4,1,63.886,.03257],[5,1,65.9026,.03204],[6,1,67.6236,.03165],[7,1,69.1645,.03139],[8,1,70.5994,.03124],[9,1,71.9687,.03117],[10,1,73.2812,.03118],[11,1,74.5388,.03125],[12,1,75.7488,.03137],[13,1,76.9186,.03154],[14,1,78.0497,.03174],[15,1,79.1458,.03197],[16,1,80.2113,.03222],[17,1,81.2487,.03248],[18,1,82.2587,.03277],[19,1,83.2418,.03307],[20,1,84.1996,.03337],[21,1,85.1348,.03369],[22,1,86.0477,.03401],[23,1,86.941,.03433],[24,1,87.8161,.03466],[25,1,87.0855,.03496],[26,1,88.005,.03514],[27,1,88.9119,.03533],[28,1,89.8049,.03553],[29,1,90.6817,.03573],[30,1,91.5414,.03594],[31,1,92.3832,.03614],[32,1,93.2072,.03635],[33,1,94.0134,.03656],[34,1,94.8025,.03677],[35,1,95.5744,.03699],[36,1,96.3297,.0372],[37,1,97.0689,.03742],[38,1,97.7927,.03763],[39,1,98.5014,.03785],[40,1,99.1959,.03806],[41,1,99.8765,.03828],[42,1,100.5436,.0385],[43,1,101.1981,.03872],[44,1,101.8407,.03894],[45,1,102.472,.03916],[46,1,103.0926,.03938],[47,1,103.7031,.0396],[48,1,104.3042,.03983],[49,1,104.8965,.04005],[50,1,105.4806,.04028],[51,1,106.0574,.0405],[52,1,106.6274,.04073],[53,1,107.1914,.04096],[54,1,107.7497,.04118],[55,1,108.3031,.04141],[56,1,108.852,.04164],[57,1,109.3969,.04187],[58,1,109.9382,.0421],[59,1,110.4764,.04234],[60,1,111.012,.04257],[61,1,111.545,.0428],[66,1,114.025,.04395],[72,1,116.975,.04525],[78,1,119.81,.04649],[84,1,122.545,.04766],[90,1,125.2,.04877],[96,1,127.79,.04984],[102,1,130.33,.05087],[108,1,132.84,.05188],[114,1,135.33,.05286],[120,1,137.82,.05383]];
+var HCA=[[0,1,34.4618,.03686],[1,1,37.2759,.03133],[2,1,39.1285,.02997],[3,1,40.5135,.02918],[4,1,41.6317,.02868],[5,1,42.5576,.02837],[6,1,43.3306,.02817],[7,1,43.9803,.02804],[8,1,44.53,.02796],[9,1,44.9998,.02792],[10,1,45.4051,.0279],[11,1,45.7573,.02789],[12,1,46.0661,.0279],[13,1,46.3395,.02791],[14,1,46.5844,.02793],[15,1,46.806,.02795],[16,1,47.0088,.02797],[17,1,47.1962,.028],[18,1,47.3711,.02803],[19,1,47.5357,.02806],[20,1,47.6919,.02809],[21,1,47.8408,.02813],[22,1,47.9833,.02816],[23,1,48.1201,.0282],[24,1,48.2515,.02824],[25,1,48.3777,.02826],[26,1,48.4989,.02829],[27,1,48.6155,.02831],[28,1,48.7277,.02834],[29,1,48.8358,.02836],[30,1,48.94,.02839],[31,1,49.0406,.02841],[32,1,49.1378,.02844],[33,1,49.2317,.02846],[34,1,49.3226,.02849],[35,1,49.4107,.02851],[36,1,49.4962,.02854],[37,1,49.5792,.02856],[38,1,49.6599,.02858],[39,1,49.7385,.02861],[40,1,49.815,.02863],[41,1,49.8897,.02866],[42,1,49.9627,.02868],[43,1,50.0342,.02871],[44,1,50.1042,.02873],[45,1,50.173,.02876],[46,1,50.2406,.02878],[47,1,50.307,.02881],[48,1,50.3726,.02883],[49,1,50.4373,.02886],[50,1,50.5012,.02888],[51,1,50.5645,.02891],[52,1,50.6271,.02893],[53,1,50.6893,.02896],[54,1,50.7511,.02898],[55,1,50.8126,.02901],[56,1,50.8738,.02903],[57,1,50.935,.02906],[58,1,50.996,.02908],[59,1,51.0571,.02911],[60,1,51.1182,.02913]];
+var BFA=[[0,-.3053,13.4069,.09814],[1,-.0632,14.9441,.09229],[2,.0424,16.3449,.08934],[3,.0953,17.2065,.0882],[4,.1261,17.6854,.08779],[5,.1443,17.9247,.08764],[6,.1537,18.0106,.08757],[7,.1571,17.9983,.08753],[8,.1564,17.9212,.08753],[9,.1528,17.8009,.08762],[10,.1471,17.6534,.08782],[11,.1399,17.4898,.08815],[12,.1316,17.3179,.08862],[13,.1224,17.144,.08921],[14,.1126,16.9731,.08991],[15,.1023,16.8088,.09071],[16,.0917,16.6535,.09161],[17,.0808,16.5086,.0926],[18,.0697,16.3747,.09366],[19,.0585,16.2516,.09479],[20,.0472,16.1392,.09598],[21,.0359,16.0371,.09723],[22,.0246,15.9449,.09853],[23,.0134,15.8622,.09988],[24,.0023,15.7883,.10126],[25,-.0087,15.723,.10269],[26,-.0194,15.6658,.10415],[27,-.03,15.6162,.10563],[28,-.0404,15.5737,.10714],[29,-.0505,15.5379,.10866],[30,-.0605,15.5082,.11019],[31,-.0702,15.4844,.11173],[32,-.0797,15.4659,.11327],[33,-.0891,15.4524,.11481],[34,-.0982,15.4437,.11635],[35,-.1071,15.4393,.11789],[36,-.1159,15.4389,.11942],[37,-.1244,15.4424,.12094],[38,-.1327,15.4492,.12244],[39,-.1409,15.4593,.12394],[40,-.1488,15.4724,.12541],[41,-.1566,15.4883,.12688],[42,-.1642,15.5069,.12833],[43,-.1716,15.528,.12977],[44,-.1788,15.5514,.13118],[45,-.1859,15.5771,.13259],[46,-.1928,15.6049,.13397],[47,-.1996,15.6347,.13534],[48,-.2062,15.6665,.1367],[49,-.2127,15.7002,.13804],[50,-.2191,15.7359,.13936],[51,-.2253,15.7734,.14067],[52,-.2314,15.8127,.14197],[53,-.2374,15.854,.14325],[54,-.2433,15.8972,.14452],[55,-.2491,15.9424,.14578],[56,-.2548,15.9896,.14703],[57,-.2604,16.0389,.14826],[58,-.266,16.0902,.14949],[59,-.2714,16.1436,.1507],[60,-.2768,16.1993,.15191],[66,-.3068,16.46,.15771],[72,-.337,16.75,.16369],[78,-.367,17.08,.16976],[84,-.397,17.45,.17581],[90,-.426,17.87,.18172],[96,-.453,18.33,.18741],[102,-.478,18.84,.19279],[108,-.501,19.39,.19784],[114,-.521,19.98,.20253],[120,-.539,20.60,.20687]];
+
+// STATE
+var SK="growth-pwa-v4",S,ac,av="log",lf="All",pd=null,sok=true;
+var PIN="wawaguagua";
+
+// MATH
+function agM(b,d){var a=new Date(b),c=new Date(d);return(c.getFullYear()-a.getFullYear())*12+(c.getMonth()-a.getMonth())+(c.getDate()-a.getDate())/30.4375}
+function iLMS(t,a){if(a<=t[0][0])return{L:t[0][1],M:t[0][2],S:t[0][3]};if(a>=t[t.length-1][0])return{L:t[t.length-1][1],M:t[t.length-1][2],S:t[t.length-1][3]};var l=t[0],h=t[1];for(var i=0;i<t.length-1;i++){if(t[i][0]<=a&&t[i+1][0]>=a){l=t[i];h=t[i+1];break}}var f=h[0]===l[0]?0:(a-l[0])/(h[0]-l[0]);return{L:l[1]+f*(h[1]-l[1]),M:l[2]+f*(h[2]-l[2]),S:l[3]+f*(h[3]-l[3])}}
+function zS(v,L,M,s){return L===0?Math.log(v/M)/s:(Math.pow(v/M,L)-1)/(L*s)}
+function vZ(z,L,M,s){return L===0?M*Math.exp(s*z):M*Math.pow(1+L*s*z,1/L)}
+function zP(z){var a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911,s=z<0?-1:1,x=Math.abs(z)/Math.sqrt(2),t=1/(1+p*x);return((1+s*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x)))/2)*100}
+function pc(v,t,a){if(v==null||a<0||a>t[t.length-1][0])return null;var o=iLMS(t,a);return Math.round(zP(zS(v,o.L,o.M,o.S))*10)/10}
+function bm(h,w){if(!h||!w)return null;return Math.round(w/((h/100)*(h/100))*10)/10}
+
+// STORAGE
+function ld(){try{var s=localStorage.getItem(SK);if(s){var d=JSON.parse(s);if(d.v===4)return d}}catch(e){sok=false}return null}
+function sv(){try{localStorage.setItem(SK,JSON.stringify(S))}catch(e){sok=false}}
+
+// PIN
+function checkPin(){var v=document.getElementById('pinInput').value;if(v===PIN){sessionStorage.setItem('gt_ok','1');document.getElementById('pinGate').style.display='none';afterPin()}else{document.getElementById('pinErr').textContent='Incorrect PIN';document.getElementById('pinInput').value='';document.getElementById('pinInput').focus()}}
+document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')checkPin()});
+
+function afterPin(){
+  S=ld();
+  if(!S){document.getElementById('setupGate').style.display='flex';renderSetup()}
+  else{ac=Object.keys(S.ch)[0];document.getElementById('mainApp').style.display='block';R()}
+}
+
+// SETUP
+var setupKids=[{name:'',dob:'',sex:'boy'}];
+function renderSetup(){
+  var h='';setupKids.forEach(function(k,i){
+    h+='<div class="setup-section">Child '+(i+1)+(setupKids.length>1?' <button class="setup-remove" onclick="rmSetupChild('+i+')">\u00d7</button>':'')+'</div>';
+    h+='<div class="setup-row"><label class="setup-label">Name</label><input class="setup-input" placeholder="e.g. Emma" value="'+esc(k.name)+'" onchange="setupKids['+i+'].name=this.value"></div>';
+    h+='<div class="setup-row"><label class="setup-label">Date of Birth</label><input type="date" class="setup-input" value="'+k.dob+'" onchange="setupKids['+i+'].dob=this.value"></div>';
+    h+='<div class="setup-row"><label class="setup-label">Sex</label><select class="setup-input" onchange="setupKids['+i+'].sex=this.value"><option value="boy"'+(k.sex==='boy'?' selected':'')+'>Boy</option><option value="girl"'+(k.sex==='girl'?' selected':'')+'>Girl</option></select></div>';
+  });
+  document.getElementById('setupChildren').innerHTML=h;
+}
+function addSetupChild(){setupKids.push({name:'',dob:'',sex:'boy'});renderSetup()}
+function rmSetupChild(i){setupKids.splice(i,1);renderSetup()}
+function esc(s){return(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+
+function finishSetup(){
+  var valid=setupKids.every(function(k){return k.name.trim()&&k.dob});
+  if(!valid){alert('Please fill in name and date of birth for each child.');return}
+  S={v:4,ch:{}};
+  setupKids.forEach(function(k,i){var id=k.name.trim().toLowerCase().replace(/[^a-z0-9]/g,'')+'_'+i;S.ch[id]={id:id,name:k.name.trim(),dob:k.dob,sex:k.sex,r:[]}});
+  sv();ac=Object.keys(S.ch)[0];
+  document.getElementById('setupGate').style.display='none';
+  document.getElementById('mainApp').style.display='block';R();
+}
+
+// SETTINGS
+function showSettings(){
+  var h='';Object.values(S.ch).forEach(function(c,i){
+    h+='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)"><div style="font-weight:600;font-size:13px;margin-bottom:6px">'+esc(c.name)+'</div>';
+    h+='<div style="font-size:11px;color:var(--muted)">Born: '+c.dob+' \u00b7 '+c.r.length+' records \u00b7 Sex: '+c.sex+'</div></div>';
+  });
+  document.getElementById('settingsChildren').innerHTML=h;
+  document.getElementById('setM').classList.remove('hid');
+}
+function hideSettings(){document.getElementById('setM').classList.add('hid')}
+function addSettingsChild(){
+  var name=prompt('Child name:');if(!name)return;
+  var dob=prompt('Date of birth (YYYY-MM-DD):');if(!dob||!/^\d{4}-\d{2}-\d{2}$/.test(dob))return;
+  var sex=prompt('Sex (boy/girl):','boy');if(sex!=='boy'&&sex!=='girl')sex='boy';
+  var id=name.trim().toLowerCase().replace(/[^a-z0-9]/g,'')+'_'+Object.keys(S.ch).length;
+  S.ch[id]={id:id,name:name.trim(),dob:dob,sex:sex,r:[]};sv();showSettings();R();
+}
+function saveSettings(){hideSettings();R()}
+function resetAll(){if(confirm('Delete ALL data including children and measurements? This cannot be undone.')){try{localStorage.removeItem(SK)}catch(e){}location.reload()}}
+
+// RENDER
+function R(){
+  var keys=Object.keys(S.ch);
+  document.getElementById('tabs').innerHTML=keys.map(function(k){var c=S.ch[k];return'<button class="tab '+(ac===k?'on':'')+'" onclick="setC(\''+k+'\')">'+esc(c.name)+'</button>'}).join('');
+  var c=S.ch[ac];if(!c)return;
+  document.getElementById('meta').textContent='Born '+c.dob+' \u00b7 '+c.r.length+' measurements';
+  document.getElementById('vLog').classList.toggle('hid',av!=='log');document.getElementById('vCh').classList.toggle('hid',av!=='charts');
+  document.querySelectorAll('.pill[data-v]').forEach(function(b){b.classList.toggle('on',b.dataset.v===av)});
+  if(av==='log')rT();else{rLF();rCh()}
+}
+function fp(v){if(v==null)return'<span style="color:var(--muted);font-size:10px">\u2014</span>';var r=Math.round(v),c=r<3||r>97?'pa':r<15||r>85?'pw':'pn';return'<span class="pct '+c+'">'+r+'%</span>'}
+function fA(a){if(a<1)return Math.round(a*30.4)+'d';if(a<24)return Math.round(a)+'mo';return Math.floor(a/12)+'y'+Math.round(a%12)+'mo'}
+function rT(){var c=S.ch[ac];if(!c||!c.r.length){document.getElementById('tblC').innerHTML='<div class="empty">No measurements yet. Use \u2191 Import to load data.</div>';return}
+var sr=c.r.slice().sort(function(a,b){return b.date.localeCompare(a.date)});
+var h='<table class="tbl"><thead><tr><th class="tl">Date</th><th>Age</th><th>Ht</th><th>%</th><th>Wt</th><th>%</th><th>Hd</th><th>%</th><th>BMI</th><th>%</th><th class="tl">Loc</th><th></th></tr></thead><tbody>';
+sr.forEach(function(r,i){var a=agM(c.dob,r.date),b=bm(r.height,r.weight);
+h+='<tr><td class="tl">'+r.date+'</td><td style="color:var(--muted);font-size:10px">'+fA(a)+'</td><td class="vl">'+(r.height!=null?r.height:'\u2014')+'</td><td>'+fp(pc(r.height,LFA,a))+'</td><td class="vl">'+(r.weight!=null?r.weight:'\u2014')+'</td><td>'+fp(pc(r.weight,WFA,a))+'</td><td class="vl">'+(r.head!=null?r.head:'\u2014')+'</td><td>'+fp(pc(r.head,HCA,a))+'</td><td class="vl">'+(b!=null?b:'\u2014')+'</td><td>'+fp(b?pc(b,BFA,a):null)+'</td><td class="tl" style="font-size:10px;color:var(--muted);max-width:55px;overflow:hidden;text-overflow:ellipsis">'+(r.location||'')+'</td><td><button class="db" onclick="aD('+i+')">\u00d7</button></td></tr>'});
+h+='</tbody></table>';document.getElementById('tblC').innerHTML=h}
+function rLF(){var c=S.ch[ac];if(!c)return;var ls=new Set();c.r.forEach(function(r){if(r.location)ls.add(r.location)});
+var a=['All'].concat(Array.from(ls).sort());
+document.getElementById('locF').innerHTML=a.map(function(l){return'<button class="sm '+(lf===l?'on':'')+'" onclick="sLF(\''+l.replace(/'/g,"\\'")+"'\")>"+(l||'Unlabeled')+'</button>'}).join('')}
+function rCh(){var c=S.ch[ac];if(!c)return;var rs=lf==='All'?c.r:c.r.filter(function(r){return(r.location||'').toLowerCase()===lf.toLowerCase()});
+dC('cH',rs,c.dob,'height',LFA);dC('cW',rs,c.dob,'weight',WFA);dC('cHd',rs,c.dob,'head',HCA);dC('cB',rs,c.dob,'bmi',BFA)}
+function dC(id,recs,dob,metric,table){
+var canvas=document.getElementById(id),dpr=window.devicePixelRatio||1,rect=canvas.parentElement.getBoundingClientRect(),W=rect.width,H=240;
+canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';
+var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+var pts=recs.filter(function(r){return metric==='bmi'?(r.height&&r.weight):r[metric]!=null}).map(function(r){return{x:agM(dob,r.date),y:metric==='bmi'?bm(r.height,r.weight):r[metric]}}).sort(function(a,b){return a.x-b.x});
+if(!pts.length){ctx.fillStyle='#8a857e';ctx.font='13px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillText('No data',W/2,H/2);return}
+var maxAge=Math.min(Math.max(pts[pts.length-1].x+3,12),table[table.length-1][0]),zs=[-1.88,-1.04,0,1.04,1.88],step=Math.max(1,Math.floor(maxAge/80)),bands=zs.map(function(){return[]}),ages=[];
+for(var a=0;a<=maxAge;a+=step){ages.push(a);var o=iLMS(table,a);zs.forEach(function(z,i){bands[i].push(vZ(z,o.L,o.M,o.S))})}
+var yMin=1e9,yMax=-1e9;bands.forEach(function(b){b.forEach(function(v){if(v<yMin)yMin=v;if(v>yMax)yMax=v})});pts.forEach(function(p){if(p.y<yMin)yMin=p.y;if(p.y>yMax)yMax=p.y});
+var yP=(yMax-yMin)*.08;yMin-=yP;yMax+=yP;
+var pad={t:12,r:10,b:32,l:38},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+function tx(v){return pad.l+(v/maxAge)*cW}function ty(v){return pad.t+cH-(v-yMin)/(yMax-yMin)*cH}
+ctx.strokeStyle='#e8e5e0';ctx.lineWidth=.5;
+for(var i=0;i<=5;i++){var v=yMin+(yMax-yMin)*i/5,y=ty(v);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle='#8a857e';ctx.font='10px -apple-system,sans-serif';ctx.textAlign='right';ctx.fillText(Math.round(v*10)/10,pad.l-4,y+3)}
+var xT=Math.min(8,Math.floor(maxAge/6));for(var i=0;i<=xT;i++){var v=Math.round(maxAge*i/xT),x=tx(v);ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,H-pad.b);ctx.stroke();ctx.fillStyle='#8a857e';ctx.font='10px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillText(v,x,H-pad.b+14)}
+ctx.fillText('Age (months)',W/2,H-2);
+ctx.fillStyle='rgba(164,200,225,.08)';ctx.beginPath();ages.forEach(function(a,i){var x=tx(a),y=ty(bands[4][i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});for(var i=ages.length-1;i>=0;i--)ctx.lineTo(tx(ages[i]),ty(bands[0][i]));ctx.closePath();ctx.fill();
+ctx.fillStyle='rgba(164,200,225,.08)';ctx.beginPath();ages.forEach(function(a,i){var x=tx(a),y=ty(bands[3][i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});for(var i=ages.length-1;i>=0;i--)ctx.lineTo(tx(ages[i]),ty(bands[1][i]));ctx.closePath();ctx.fill();
+var pC=['rgba(164,200,225,.5)','rgba(164,200,225,.7)','#7fb3d3','rgba(164,200,225,.7)','rgba(164,200,225,.5)'],pD=[[4,4],[4,4],[],[4,4],[4,4]],pW=[1,1,1.5,1,1];
+bands.forEach(function(band,bi){ctx.strokeStyle=pC[bi];ctx.lineWidth=pW[bi];ctx.setLineDash(pD[bi]);ctx.beginPath();ages.forEach(function(a,i){var x=tx(a),y=ty(band[i]);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke();ctx.setLineDash([])});
+if(pts.length>1){ctx.strokeStyle='#5b8a72';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.beginPath();pts.forEach(function(p,i){var x=tx(p.x),y=ty(p.y);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)});ctx.stroke()}
+pts.forEach(function(p){var x=tx(p.x),y=ty(p.y);ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#5b8a72';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke()});
+var lb=['3rd','15th','50th','85th','97th'];bands.forEach(function(band,bi){var ly=ty(band[band.length-1]);ctx.fillStyle=bi===2?'#7fb3d3':'rgba(164,200,225,.8)';ctx.font='9px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText(lb[bi],W-pad.r+2,ly+3)})}
+
+// ACTIONS
+function setC(k){ac=k;lf='All';R()}
+function V(v){av=v;R()}
+function sLF(l){lf=l;rLF();rCh()}
+function add(){var d=document.getElementById('fD').value,h=document.getElementById('fH').value,w=document.getElementById('fW').value,hd=document.getElementById('fHd').value,l=document.getElementById('fL').value.trim();
+if(!d||(!h&&!w))return;S.ch[ac].r.push({date:d,height:h?parseFloat(h):null,weight:w?parseFloat(w):null,head:hd?parseFloat(hd):null,location:l,id:'r_'+Date.now()});sv();R();
+document.getElementById('fH').value='';document.getElementById('fW').value='';document.getElementById('fHd').value='';document.getElementById('fL').value=''}
+function aD(i){var sr=S.ch[ac].r.slice().sort(function(a,b){return b.date.localeCompare(a.date)});pd=sr[i];
+document.getElementById('delI').textContent=pd.date+' \u2014 '+(pd.height?pd.height+'cm':'')+' '+(pd.weight?pd.weight+'kg':'')+' '+(pd.location?'('+pd.location+')':'');document.getElementById('delM').classList.remove('hid')}
+function cDel(){pd=null;document.getElementById('delM').classList.add('hid')}
+function doDel(){if(!pd)return;var rs=S.ch[ac].r,i=rs.findIndex(function(r){return r.date===pd.date&&r.height===pd.height&&r.weight===pd.weight&&r.location===pd.location});if(i>=0)rs.splice(i,1);sv();cDel();R()}
+function sL(){var v=document.getElementById('fL').value.toLowerCase(),dd=document.getElementById('ldd'),ls=new Set();Object.values(S.ch).forEach(function(c){c.r.forEach(function(r){if(r.location)ls.add(r.location)})});
+var m=Array.from(ls).filter(function(l){return l.toLowerCase().includes(v)}).sort();if(!v||!m.length){dd.classList.add('hid');return}
+dd.innerHTML=m.map(function(l){return'<div class="li" onmousedown="pL(\''+l.replace(/'/g,"\\'")+"'\")>"+esc(l)+'</div>'}).join('');dd.classList.remove('hid')}
+function pL(l){document.getElementById('fL').value=l;document.getElementById('ldd').classList.add('hid')}
+document.addEventListener('click',function(e){if(!e.target.closest('#fL'))document.getElementById('ldd').classList.add('hid')});
+function xCSV(){var c=S.ch[ac],rows=[["Date","Height_cm","Weight_kg","Head_cm","BMI","Location","Age_months","Height_%ile","Weight_%ile","Head_%ile","BMI_%ile"]];
+c.r.slice().sort(function(a,b){return a.date.localeCompare(b.date)}).forEach(function(r){var a=agM(c.dob,r.date),b=bm(r.height,r.weight);
+rows.push([r.date,r.height!=null?r.height:'',r.weight!=null?r.weight:'',r.head!=null?r.head:'',b!=null?b:'',r.location||'',Math.round(a*10)/10,pc(r.height,LFA,a)||'',pc(r.weight,WFA,a)||'',pc(r.head,HCA,a)||'',b?pc(b,BFA,a)||'':''])});
+var csv=rows.map(function(r){return r.join(',')}).join('\n'),blob=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=c.name+'_growth.csv';a.click();URL.revokeObjectURL(a.href)}
+function iCSV(e){var f=e.target.files&&e.target.files[0];if(!f)return;var reader=new FileReader();
+reader.onload=function(ev){var lines=ev.target.result.split('\n').filter(function(l){return l.trim()});if(lines.length<2)return;
+var rs=S.ch[ac].r;lines.slice(1).forEach(function(line,i){var c=line.split(',');if(c.length<2)return;
+var rec={date:(c[0]||'').trim(),height:c[1]?parseFloat(c[1])||null:null,weight:c[2]?parseFloat(c[2])||null:null,head:c[3]?parseFloat(c[3])||null:null,location:(c[5]||'').trim(),id:'i_'+Date.now()+'_'+i};
+if(rec.date&&(rec.height||rec.weight)){if(!rs.some(function(r){return r.date===rec.date&&r.height===rec.height&&r.weight===rec.weight}))rs.push(rec)}});
+sv();R()};reader.readAsText(f);e.target.value=''}
+var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){if(av==='charts')rCh()},200)});
+
+// INIT
+if(sessionStorage.getItem('gt_ok')==='1'){document.getElementById('pinGate').style.display='none';afterPin()}
+else{setTimeout(function(){document.getElementById('pinInput').focus()},100)}
+document.getElementById('fD').value=new Date().toISOString().split('T')[0];
+</script></body></html>
